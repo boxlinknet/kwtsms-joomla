@@ -1,0 +1,93 @@
+/* kwtSMS Admin CSS - extends Joomla Atum, does not replace it */
+
+/* Brand accent color: #FFA200 (kwtSMS orange) */
+
+/* Active tab indicator */
+.kwtsms-tabs .nav-tabs .nav-link.active,
+.kwtsms-tabs .nav-tabs .nav-link:hover {
+    border-bottom-color: #FFA200;
+    color: #FFA200;
+}
+
+/* Card header accent */
+.kwtsms-card-header {
+    background-color: #FFA200;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* Primary button variant */
+.btn-kwtsms {
+    background-color: #FFA200;
+    border-color: #FFA200;
+    color: #ffffff;
+}
+
+.btn-kwtsms:hover,
+.btn-kwtsms:focus {
+    background-color: #cc8200;
+    border-color: #cc8200;
+    color: #ffffff;
+}
+
+/* Status badge variants */
+.badge-kwtsms-ok {
+    background-color: #28a745;
+}
+
+.badge-kwtsms-error {
+    background-color: #dc3545;
+}
+
+.badge-kwtsms-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+
+.badge-kwtsms-info {
+    background-color: #17a2b8;
+}
+
+/* Dashboard status cards */
+.kwtsms-status-card {
+    border-left: 4px solid #FFA200;
+    transition: box-shadow 0.2s ease;
+}
+
+.kwtsms-status-card:hover {
+    box-shadow: 0 2px 8px rgba(255, 162, 0, 0.2);
+}
+
+.kwtsms-status-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #FFA200;
+}
+
+/* Log level color coding */
+.kwtsms-log-debug  { color: #6c757d; }
+.kwtsms-log-info   { color: #17a2b8; }
+.kwtsms-log-warning { color: #ffc107; }
+.kwtsms-log-error  { color: #dc3545; }
+
+/* Template character counter */
+.kwtsms-char-counter {
+    font-size: 0.875rem;
+    color: #6c757d;
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+.kwtsms-char-counter.warning {
+    color: #ffc107;
+}
+
+.kwtsms-char-counter.danger {
+    color: #dc3545;
+}
+
+/* RTL support for Arabic admin */
+[dir="rtl"] .kwtsms-status-card {
+    border-left: none;
+    border-right: 4px solid #FFA200;
+}
