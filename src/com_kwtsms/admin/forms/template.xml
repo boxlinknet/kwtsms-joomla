@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+    <fieldset name="basic" label="COM_KWTSMS_TEMPLATE_EDIT">
+        <field name="id"
+               type="hidden"
+               default="0" />
+
+        <field name="title"
+               type="text"
+               label="COM_KWTSMS_TEMPLATE_TITLE"
+               required="true"
+               maxlength="100" />
+
+        <field name="body"
+               type="textarea"
+               label="COM_KWTSMS_TEMPLATE_BODY"
+               required="true"
+               rows="5"
+               cols="60" />
+
+        <field name="enabled"
+               type="radio"
+               label="COM_KWTSMS_TEMPLATE_ENABLED"
+               class="btn-group"
+               default="1">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+    </fieldset>
+</form>
