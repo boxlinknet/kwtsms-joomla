@@ -103,4 +103,81 @@ final class KwtSmsApiClient
 
         return in_array($prefix, $coverage, true);
     }
+
+    /**
+     * Get current account balance.
+     */
+    public function balance(): array
+    {
+        return $this->post('balance', []);
+    }
+
+    /**
+     * Get list of available sender IDs.
+     */
+    public function senderid(): array
+    {
+        return $this->post('senderid', []);
+    }
+
+    /**
+     * Get active country prefix coverage list.
+     */
+    public function coverage(): array
+    {
+        return $this->post('coverage', []);
+    }
+
+    /**
+     * Validate one or more phone numbers (comma-separated).
+     *
+     * @param string $mobilesCsv Comma-separated phone numbers in international format
+     */
+    public function validate(string $mobilesCsv): array
+    {
+        return $this->post('validate', ['mobile' => $mobilesCsv]);
+    }
+
+    /**
+     * POST a request to the kwtSMS API and return decoded JSON.
+     */
+    private function post(string $endpoint, array $payload): array
+    {
+        $payload['username'] = $this->username;
+        $payload['password'] = $this->password;
+
+        $url  = 'https://www.kwtsms.com/API/' . $endpoint . '/';
+        $json = json_encode($payload);
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_POST           => true,
+            CURLOPT_POSTFIELDS     => $json,
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_HTTPHEADER     => [
+                'Content-Type: application/json',
+                'Accept: application/json',
+                'Content-Length: ' . strlen($json),
+            ],
+            CURLOPT_SSL_VERIFYPEER => true,
+            CURLOPT_SSL_VERIFYHOST => 2,
+            CURLOPT_TIMEOUT        => 30,
+        ]);
+
+        $response = curl_exec($ch);
+        $error    = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            return ['result' => 'ERROR', 'code' => 'CURL', 'description' => $error];
+        }
+
+        $decoded = json_decode($response, true);
+
+        if (!is_array($decoded)) {
+            return ['result' => 'ERROR', 'code' => 'JSON', 'description' => 'Invalid JSON response'];
+        }
+
+        return $decoded;
+    }
 }
