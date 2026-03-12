@@ -1,0 +1,33 @@
+<?php
+
+namespace KwtSMS\Component\Kwtsms\Administrator\View\Settings;
+
+defined('_JEXEC') or die;
+
+use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
+use Joomla\CMS\Toolbar\ToolbarHelper;
+
+/**
+ * Settings HTML view for com_kwtsms.
+ */
+final class HtmlView extends BaseHtmlView
+{
+	/** @var array<string, mixed> Current settings values */
+	public array $settings = [];
+
+	/**
+	 * Display the view.
+	 *
+	 * @param string|null $tpl Template name override
+	 */
+	public function display($tpl = null): void
+	{
+		$model = $this->getModel();
+
+		$this->settings = $model->getSettings();
+
+		ToolbarHelper::title('kwtSMS', 'phone');
+
+		parent::display($tpl);
+	}
+}
