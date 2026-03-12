@@ -85,4 +85,22 @@ final class KwtSmsApiClient
         // 5. Trim leading/trailing whitespace
         return trim($message);
     }
+
+    /**
+     * Verify a normalized phone number is covered by the given prefix list.
+     * Returns false immediately if coverage list is empty.
+     *
+     * @param string   $normalizedPhone Phone in digits-only international format
+     * @param string[] $coverage        Array of active country prefixes (e.g. ['965','971'])
+     */
+    public function verify(string $normalizedPhone, array $coverage): bool
+    {
+        if (empty($coverage)) {
+            return false;
+        }
+
+        $prefix = substr($normalizedPhone, 0, 3);
+
+        return in_array($prefix, $coverage, true);
+    }
 }
