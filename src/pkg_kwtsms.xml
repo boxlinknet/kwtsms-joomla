@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="package" method="upgrade">
+    <name>pkg_kwtsms</name>
+    <packagename>kwtsms</packagename>
+    <author>kwtSMS</author>
+    <authorEmail>support@kwtsms.com</authorEmail>
+    <authorUrl>https://www.kwtsms.com</authorUrl>
+    <version>1.0.0</version>
+    <description>kwtSMS SMS Gateway for Joomla - Complete Package</description>
+    <license>GPL v2 or later</license>
+    <blockChildUninstall>true</blockChildUninstall>
+    <files folder="constituents">
+        <file type="component" id="com_kwtsms">com_kwtsms.zip</file>
+        <file type="plugin" id="kwtsms" group="system">plg_system_kwtsms.zip</file>
+        <file type="plugin" id="kwtsms" group="task">plg_task_kwtsms.zip</file>
+        <file type="plugin" id="kwtsms" group="vmcustom">plg_vmcustom_kwtsms.zip</file>
+    </files>
+    <updateservers>
+        <server type="package" priority="1" name="kwtSMS Update Server">https://www.kwtsms.com/joomla/update.xml</server>
+    </updateservers>
+</extension>
