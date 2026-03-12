@@ -1,8 +1,8 @@
 <?php
 
-defined('_JEXEC') or die;
-
 namespace KwtSMS\Component\Kwtsms\Administrator\Service;
+
+defined('_JEXEC') or die;
 
 use Joomla\Database\DatabaseInterface;
 use Joomla\Database\ParameterType;
