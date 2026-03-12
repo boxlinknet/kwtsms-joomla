@@ -1,0 +1,35 @@
+# Claude
+.claude/
+CLAUDE.md
+
+# Documentation (keep locally, not in repo)
+docs/
+
+# Environment / credentials (keep .env.example files)
+.env
+.env.local
+.env.production
+tests/.env
+
+# Logs
+*.log
+
+# Build artifacts
+*.zip
+src/constituents/
+build/
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+__MACOSX/
+
+# Dependencies
+vendor/
+
+# Docker data volumes
+docker/joomla-data/
+docker/db-data/
