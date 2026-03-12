@@ -139,6 +139,129 @@ final class KwtSmsApiClient
     }
 
     /**
+     * Send SMS to one or more recipients with full pipeline:
+     * normalize, verify coverage, clean message, batch, POST.
+     *
+     * The caller must persist the result to #__kwtsms_messages.
+     * This method only updates the cached balance on success.
+     *
+     * @param string[]             $recipients Phone numbers (any format: normalized internally)
+     * @param string               $message    Message text (cleaned internally)
+     * @param string               $sender     Sender ID
+     * @param bool                 $testMode   If true, message enters queue but is not delivered
+     * @param SettingsService|null $settings   Optional settings for gateway guard, coverage filter, balance update
+     */
+    public function send(
+        array $recipients,
+        string $message,
+        string $sender,
+        bool $testMode = false,
+        ?SettingsService $settings = null
+    ): array {
+        // 1. Gateway guard
+        if ($settings !== null && !$settings->isGatewayReady()) {
+            return ['result' => 'SKIPPED', 'reason' => 'Gateway disabled or not configured'];
+        }
+
+        // 2. Balance guard
+        if ($settings !== null && (float) $settings->get('balance', '0') <= 0) {
+            return ['result' => 'SKIPPED', 'reason' => 'Zero balance'];
+        }
+
+        // 3. Normalize all recipients
+        $normalized = array_map([$this, 'normalize'], $recipients);
+        $normalized = array_filter($normalized, static fn(string $n): bool => $n !== '');
+        $normalized = array_values($normalized);
+
+        // 4. Filter by coverage if settings available
+        if ($settings !== null) {
+            $coverage = $settings->getCoverage();
+            $normalized = array_values(array_filter(
+                $normalized,
+                fn(string $n): bool => $this->verify($n, $coverage)
+            ));
+        }
+
+        // 5. Guard: no valid recipients
+        if (empty($normalized)) {
+            return ['result' => 'SKIPPED', 'reason' => 'No valid recipients'];
+        }
+
+        // 6. Clean message
+        $cleanMsg = $this->cleanMessage($message);
+
+        // 7. Guard: empty message after cleaning
+        if ($cleanMsg === '') {
+            return ['result' => 'ERROR', 'reason' => 'Empty message after cleaning'];
+        }
+
+        // 8. Bulk if more than 200 recipients
+        if (count($normalized) > 200) {
+            return $this->bulkSend($normalized, $cleanMsg, $sender, $testMode, $settings);
+        }
+
+        // 9. Build and send payload
+        $payload = [
+            'sender'  => $sender,
+            'mobile'  => implode(',', $normalized),
+            'message' => $cleanMsg,
+            'test'    => $testMode ? '1' : '0',
+        ];
+
+        $response = $this->post('send', $payload);
+
+        // 10. Update balance on success
+        if (($response['result'] ?? '') === 'OK' && $settings !== null) {
+            $settings->updateBalance((float) ($response['balance-after'] ?? 0));
+        }
+
+        return $response;
+    }
+
+    /**
+     * Send to more than 200 recipients in batches of 200 with 0.2s delay between batches.
+     *
+     * @param string[]             $recipients Already normalized phone numbers
+     * @param string               $message    Already cleaned message text
+     * @param string               $sender     Sender ID
+     * @param bool                 $testMode   Test mode flag
+     * @param SettingsService|null $settings   Optional settings for balance update
+     */
+    public function bulkSend(
+        array $recipients,
+        string $message,
+        string $sender,
+        bool $testMode = false,
+        ?SettingsService $settings = null
+    ): array {
+        $batches = array_chunk($recipients, 200);
+        $results = [];
+
+        foreach ($batches as $index => $batch) {
+            if ($index > 0) {
+                usleep(200000); // 0.2s between batches
+            }
+
+            $payload = [
+                'sender'  => $sender,
+                'mobile'  => implode(',', $batch),
+                'message' => $message,
+                'test'    => $testMode ? '1' : '0',
+            ];
+
+            $response = $this->post('send', $payload);
+
+            if (($response['result'] ?? '') === 'OK' && $settings !== null) {
+                $settings->updateBalance((float) ($response['balance-after'] ?? 0));
+            }
+
+            $results[] = $response;
+        }
+
+        return ['result' => 'BULK', 'batches' => count($batches), 'responses' => $results];
+    }
+
+    /**
      * POST a request to the kwtSMS API and return decoded JSON.
      */
     private function post(string $endpoint, array $payload): array
