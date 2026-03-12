@@ -21,6 +21,12 @@
 			<folder>tmpl</folder>
 			<filename>access.xml</filename>
 		</files>
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_kwtsms.ini</language>
+			<language tag="en-GB">language/en-GB.com_kwtsms.sys.ini</language>
+			<language tag="ar-AA">language/ar-AA.com_kwtsms.ini</language>
+			<language tag="ar-AA">language/ar-AA.com_kwtsms.sys.ini</language>
+		</languages>
 		<install>
 			<sql>
 				<file driver="mysql" charset="utf8mb4">sql/install.mysql.sql</file>

@@ -9,7 +9,7 @@ use Joomla\CMS\Router\Route;
 HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 ?>
 
-<?php echo $this->loadTemplate('../../layout/tabs'); ?>
+<?php include JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/layout/tabs.php'; ?>
 
 <div class="container-fluid mt-3">
     <table class="table table-striped table-hover">

@@ -37,7 +37,9 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
     public static function getSubscribedEvents(): array
     {
         return [
-            'onExecuteScheduledTask' => 'onExecuteScheduledTask',
+            'onTaskOptionsList'    => 'advertiseRoutines',
+            'onExecuteTask'        => 'standardRoutineHandler',
+            'onContentPrepareForm' => 'enhanceTaskItemForm',
         ];
     }
 

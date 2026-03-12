@@ -17,7 +17,7 @@ $levelColors = [
 ];
 ?>
 
-<?php echo $this->loadTemplate('../../layout/tabs'); ?>
+<?php include JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/layout/tabs.php'; ?>
 
 <div class="container-fluid mt-3">
 

@@ -12,7 +12,7 @@ HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 $senderIds = $this->settings['senderids'] ?? [];
 ?>
 
-<?php echo $this->loadTemplate('../../layout/tabs'); ?>
+<?php include JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/layout/tabs.php'; ?>
 
 <div class="container-fluid mt-3">
 	<form method="post" action="<?php echo Route::_('index.php?option=com_kwtsms&task=settings.save', false); ?>">

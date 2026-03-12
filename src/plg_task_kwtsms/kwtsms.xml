@@ -14,4 +14,8 @@
         <folder>language</folder>
         <folder>src</folder>
     </files>
+    <languages>
+        <language tag="en-GB">language/en-GB.plg_task_kwtsms.ini</language>
+        <language tag="ar-AA">language/ar-AA.plg_task_kwtsms.ini</language>
+    </languages>
 </extension>

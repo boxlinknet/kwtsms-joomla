@@ -2,11 +2,12 @@
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
 // Determine active view from URL
-$currentView = $this->input ? $this->input->getCmd('view', 'dashboard') : 'dashboard';
+$currentView = Factory::getApplication()->input->getCmd('view', 'dashboard');
 
 $tabs = [
     'dashboard'    => Text::_('COM_KWTSMS_DASHBOARD'),

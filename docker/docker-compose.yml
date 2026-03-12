@@ -4,7 +4,7 @@ services:
   joomla:
     image: joomla:latest
     ports:
-      - "8080:80"
+      - "8082:80"
     environment:
       JOOMLA_DB_HOST: db
       JOOMLA_DB_USER: joomla

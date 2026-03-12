@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\View\Logs;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\View\HtmlView as BaseHtmlView;
 use Joomla\CMS\Toolbar\ToolbarHelper;
 
@@ -23,7 +24,7 @@ final class HtmlView extends BaseHtmlView
 	 */
 	public function display($tpl = null): void
 	{
-		$input = $this->getDocument()->getApplication()->getInput();
+		$input = Factory::getApplication()->getInput();
 
 		$this->filters = [
 			'level'     => $input->getString('filter_level', ''),

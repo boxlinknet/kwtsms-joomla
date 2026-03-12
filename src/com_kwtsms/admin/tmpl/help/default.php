@@ -8,7 +8,7 @@ use Joomla\CMS\Language\Text;
 HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 ?>
 
-<?php echo $this->loadTemplate('../../layout/tabs'); ?>
+<?php include JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/layout/tabs.php'; ?>
 
 <div class="container-fluid mt-3">
 
