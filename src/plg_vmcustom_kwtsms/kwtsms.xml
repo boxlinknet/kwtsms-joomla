@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="vmcustom" method="upgrade">
+    <name>plg_vmcustom_kwtsms</name>
+    <author>kwtSMS</author>
+    <authorEmail>support@kwtsms.com</authorEmail>
+    <authorUrl>https://www.kwtsms.com</authorUrl>
+    <version>1.0.0</version>
+    <description>PLG_VMCUSTOM_KWTSMS_DESCRIPTION</description>
+    <license>GPL v2 or later</license>
+    <namespace path="src">KwtSMS\Plugin\Vmcustom\Kwtsms</namespace>
+    <files>
+        <filename plugin="kwtsms">services/provider.php</filename>
+        <folder>language</folder>
+        <folder>src</folder>
+    </files>
+</extension>
