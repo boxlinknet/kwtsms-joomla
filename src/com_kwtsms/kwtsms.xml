@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" method="upgrade">
+	<name>COM_KWTSMS</name>
+	<author>kwtSMS</author>
+	<authorEmail>support@kwtsms.com</authorEmail>
+	<authorUrl>https://www.kwtsms.com</authorUrl>
+	<version>1.0.0</version>
+	<description>COM_KWTSMS_DESCRIPTION</description>
+	<license>GPL v2 or later</license>
+	<namespace path="src">KwtSMS\Component\Kwtsms</namespace>
+
+	<administration>
+		<menu img="class:kwtsms">COM_KWTSMS</menu>
+		<files folder="admin">
+			<folder>forms</folder>
+			<folder>language</folder>
+			<folder>services</folder>
+			<folder>sql</folder>
+			<folder>src</folder>
+			<folder>tmpl</folder>
+			<filename>access.xml</filename>
+		</files>
+		<install>
+			<sql>
+				<file driver="mysql" charset="utf8mb4">sql/install.mysql.sql</file>
+			</sql>
+		</install>
+		<uninstall>
+			<sql>
+				<file driver="mysql" charset="utf8mb4">sql/uninstall.mysql.sql</file>
+			</sql>
+		</uninstall>
+	</administration>
+
+	<updateservers>
+		<server type="extension" priority="1" name="kwtSMS Update Server">https://www.kwtsms.com/joomla/update.xml</server>
+	</updateservers>
+</extension>
