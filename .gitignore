@@ -30,6 +30,9 @@ __MACOSX/
 # Dependencies
 vendor/
 
-# Docker data volumes
+# Docker data volumes (compose file stays in repo)
 docker/joomla-data/
 docker/db-data/
+
+# Git worktrees
+.worktrees/
