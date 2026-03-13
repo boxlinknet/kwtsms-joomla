@@ -12,7 +12,7 @@ INSERT INTO `#__kwtsms_settings` (`setting_key`, `setting_value`, `autoload`) VA
 ('gateway_enabled', '0', 1),
 ('gateway_configured', '0', 1),
 ('test_mode', '1', 1),
-('debug_logging', '1', 1),
+('debug_logging', '0', 1),
 ('log_retention_days', '30', 1),
 ('balance', '0', 1),
 ('senderids', '[]', 1),

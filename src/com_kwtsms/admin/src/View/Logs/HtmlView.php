@@ -26,11 +26,14 @@ final class HtmlView extends BaseHtmlView
 	{
 		$input = Factory::getApplication()->getInput();
 
+		$allowedLevels = ['debug', 'info', 'warning', 'error'];
+		$rawLevel      = $input->getString('filter_level', '');
+
 		$this->filters = [
-			'level'     => $input->getString('filter_level', ''),
+			'level'     => in_array($rawLevel, $allowedLevels, true) ? $rawLevel : '',
 			'search'    => $input->getString('filter_search', ''),
-			'date_from' => $input->getString('filter_from', ''),
-			'date_to'   => $input->getString('filter_to', ''),
+			'date_from' => $this->sanitizeDate($input->getString('filter_from', '')),
+			'date_to'   => $this->sanitizeDate($input->getString('filter_to', '')),
 		];
 
 		$this->logs = $this->getModel()->getLogs($this->filters);
@@ -38,5 +41,16 @@ final class HtmlView extends BaseHtmlView
 		ToolbarHelper::title('kwtSMS', 'phone');
 
 		parent::display($tpl);
+	}
+
+	private function sanitizeDate(string $value): string
+	{
+		if (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $value)) {
+			return '';
+		}
+
+		$dt = \DateTime::createFromFormat('Y-m-d', $value);
+
+		return ($dt && $dt->format('Y-m-d') === $value) ? $value : '';
 	}
 }

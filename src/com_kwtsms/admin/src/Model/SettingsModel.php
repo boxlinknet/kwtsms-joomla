@@ -113,7 +113,7 @@ final class SettingsModel extends BaseDatabaseModel
 
 			return $client->balance();
 		} catch (\Throwable $e) {
-			return ['result' => 'ERROR', 'description' => $e->getMessage()];
+			return ['result' => 'ERROR', 'description' => 'Connection test failed. Check Joomla error logs for details.'];
 		}
 	}
 }

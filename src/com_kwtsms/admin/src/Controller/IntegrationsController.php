@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Access\Exception\NotAllowed;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
@@ -20,7 +21,18 @@ final class IntegrationsController extends BaseController
 	{
 		$this->checkToken();
 
-		$data  = $this->input->post->getArray();
+		if (!$this->app->getIdentity()->authorise('core.manage', 'com_kwtsms')) {
+			throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
+		$data = [
+			'integration_vm_enabled'        => $this->input->post->getInt('integration_vm_enabled', 0),
+			'integration_vm_order_new'      => $this->input->post->getInt('integration_vm_order_new', 0),
+			'integration_vm_order_status'   => $this->input->post->getInt('integration_vm_order_status', 0),
+			'integration_vm_customer'       => $this->input->post->getInt('integration_vm_customer', 0),
+			'integration_vm_admin'          => $this->input->post->getInt('integration_vm_admin', 0),
+		];
+
 		$model = $this->getModel('Integrations', 'Administrator');
 
 		if ($model->saveIntegrations($data)) {

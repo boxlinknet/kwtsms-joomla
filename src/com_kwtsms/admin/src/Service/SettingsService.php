@@ -19,6 +19,11 @@ final class SettingsService
         private readonly DatabaseInterface $db,
         private string $encryptionKey = ''
     ) {
+        if ($this->encryptionKey === '') {
+            throw new \InvalidArgumentException(
+                'kwtSMS: encryption key must not be empty. Ensure Joomla\'s $secret in configuration.php is set.'
+            );
+        }
     }
 
     /**

@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Access\Exception\NotAllowed;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
@@ -20,6 +21,10 @@ final class LogsController extends BaseController
 	{
 		$this->checkToken();
 
+		if (!$this->app->getIdentity()->authorise('core.manage', 'com_kwtsms')) {
+			throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
+
 		$model = $this->getModel('Logs', 'Administrator');
 		$model->clearLogs();
 
@@ -33,6 +38,10 @@ final class LogsController extends BaseController
 	public function exportCsv(): void
 	{
 		$this->checkToken('get');
+
+		if (!$this->app->getIdentity()->authorise('core.manage', 'com_kwtsms')) {
+			throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
 
 		$model = $this->getModel('Logs', 'Administrator');
 		$csv   = $model->exportCsv();

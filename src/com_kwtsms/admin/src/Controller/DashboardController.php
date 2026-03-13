@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Access\Exception\NotAllowed;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
@@ -23,6 +24,10 @@ final class DashboardController extends BaseController
 	public function syncNow(): void
 	{
 		$this->checkToken();
+
+		if (!$this->app->getIdentity()->authorise('core.manage', 'com_kwtsms')) {
+			throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+		}
 
 		try {
 			$db       = Factory::getContainer()->get(DatabaseInterface::class);

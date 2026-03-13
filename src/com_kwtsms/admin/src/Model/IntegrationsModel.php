@@ -59,11 +59,11 @@ final class IntegrationsModel extends BaseDatabaseModel
 			$filter   = InputFilter::getInstance();
 			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
 
-			$settings->set('integration_vm_enabled', isset($data['integration_vm_enabled']) ? '1' : '0');
-			$settings->set('integration_vm_order_new_enabled', isset($data['integration_vm_order_new']) ? '1' : '0');
-			$settings->set('integration_vm_order_status_enabled', isset($data['integration_vm_order_status']) ? '1' : '0');
-			$settings->set('integration_vm_notify_customer', isset($data['integration_vm_customer']) ? '1' : '0');
-			$settings->set('integration_vm_notify_admin', isset($data['integration_vm_admin']) ? '1' : '0');
+			$settings->set('integration_vm_enabled', ($data['integration_vm_enabled'] ?? 0) ? '1' : '0');
+			$settings->set('integration_vm_order_new_enabled', ($data['integration_vm_order_new'] ?? 0) ? '1' : '0');
+			$settings->set('integration_vm_order_status_enabled', ($data['integration_vm_order_status'] ?? 0) ? '1' : '0');
+			$settings->set('integration_vm_notify_customer', ($data['integration_vm_customer'] ?? 0) ? '1' : '0');
+			$settings->set('integration_vm_notify_admin', ($data['integration_vm_admin'] ?? 0) ? '1' : '0');
 
 			return true;
 		} catch (\Throwable $e) {

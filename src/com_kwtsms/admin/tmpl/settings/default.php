@@ -135,13 +135,16 @@ document.getElementById('kwtsms-test-btn').addEventListener('click', function ()
 	var resultEl = document.getElementById('kwtsms-test-result');
 	resultEl.textContent = '...';
 
-	var token = document.querySelector('input[name="<?php echo Session::getFormToken(); ?>"]');
-	var tokenValue = token ? token.value : '';
+	var formData = new URLSearchParams();
+	formData.append('<?php echo Session::getFormToken(); ?>', '1');
+	formData.append('api_username', document.getElementById('api_username').value);
+	formData.append('api_password', document.getElementById('api_password').value);
 
-	var username = encodeURIComponent(document.getElementById('api_username').value);
-	var password = encodeURIComponent(document.getElementById('api_password').value);
-
-	fetch('index.php?option=com_kwtsms&task=settings.testConnection&<?php echo Session::getFormToken(); ?>=1&api_username=' + username + '&api_password=' + password)
+	fetch('index.php?option=com_kwtsms&task=settings.testConnection', {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		body: formData
+	})
 		.then(function (r) { return r.json(); })
 		.then(function (data) {
 			if (data.result === 'OK') {

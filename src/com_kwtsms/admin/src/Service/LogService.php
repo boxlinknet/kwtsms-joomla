@@ -126,12 +126,18 @@ final class LogService
      */
     private function maskCredentials(array $data): array
     {
-        $sensitiveKeys = ['username', 'password', 'api_username', 'api_password'];
-        $masked = [];
+        $credentialKeys = ['username', 'password', 'api_username', 'api_password'];
+        $phoneKeys      = ['mobile', 'phone', 'phone_1', 'phone_2', 'recipient'];
+        $masked         = [];
 
         foreach ($data as $key => $value) {
-            if (in_array($key, $sensitiveKeys, true)) {
+            if (in_array($key, $credentialKeys, true)) {
                 $masked[$key] = '***';
+            } elseif (in_array($key, $phoneKeys, true)) {
+                $str          = (string) $value;
+                $masked[$key] = strlen($str) > 7
+                    ? substr($str, 0, 7) . str_repeat('*', strlen($str) - 7)
+                    : '***';
             } elseif (is_array($value)) {
                 $masked[$key] = $this->maskCredentials($value);
             } else {

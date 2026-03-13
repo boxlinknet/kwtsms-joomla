@@ -43,9 +43,11 @@ final class TemplateResolver
             return '';
         }
 
-        // Replace {key} tokens with placeholder values
+        // Replace {key} tokens with placeholder values.
+        // Strip control characters from values to prevent SMS injection.
         foreach ($placeholders as $token => $value) {
-            $body = str_replace('{' . $token . '}', (string) $value, $body);
+            $safe = preg_replace('/[\x00-\x1F\x7F]/u', ' ', (string) $value) ?? '';
+            $body = str_replace('{' . $token . '}', trim($safe), $body);
         }
 
         return $body;
