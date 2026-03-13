@@ -5,11 +5,16 @@ CLAUDE.md
 # Documentation (keep locally, not in repo)
 docs/
 
-# Environment / credentials (keep .env.example files)
+# Tests (keep locally, not in repo)
+tests/
+
+# Docker
+docker/
+
+# Environment / credentials
 .env
 .env.local
 .env.production
-tests/.env
 
 # Logs
 *.log
@@ -29,10 +34,6 @@ __MACOSX/
 
 # Dependencies
 vendor/
-
-# Docker data volumes (compose file stays in repo)
-docker/joomla-data/
-docker/db-data/
 
 # Git worktrees
 .worktrees/
