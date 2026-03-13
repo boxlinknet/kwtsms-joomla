@@ -4,7 +4,7 @@
     <author>kwtSMS</author>
     <authorEmail>support@kwtsms.com</authorEmail>
     <authorUrl>https://www.kwtsms.com</authorUrl>
-    <version>1.1.0</version>
+    <version>1.1.1</version>
     <description>PLG_TASK_KWTSMS_DESCRIPTION</description>
     <license>GPL v2 or later</license>
     <namespace path="src">KwtSMS\Plugin\Task\Kwtsms</namespace>
