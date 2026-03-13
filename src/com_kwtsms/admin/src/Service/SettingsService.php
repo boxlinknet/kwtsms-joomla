@@ -64,7 +64,8 @@ final class SettingsService
      */
     public function set(string $key, mixed $value, bool $autoload = false): void
     {
-        $strValue = (string) $value;
+        $strValue    = (string) $value;
+        $autoloadInt = (int) $autoload;
 
         $query = $this->db->getQuery(true)
             ->select('COUNT(*)')
@@ -82,7 +83,7 @@ final class SettingsService
                 ->set($this->db->quoteName('autoload') . ' = :autoload')
                 ->where($this->db->quoteName('setting_key') . ' = :key')
                 ->bind(':value', $strValue, ParameterType::STRING)
-                ->bind(':autoload', (int) $autoload, ParameterType::INTEGER)
+                ->bind(':autoload', $autoloadInt, ParameterType::INTEGER)
                 ->bind(':key', $key, ParameterType::STRING);
         } else {
             $query = $this->db->getQuery(true)
@@ -91,7 +92,7 @@ final class SettingsService
                 ->values(':key, :value, :autoload')
                 ->bind(':key', $key, ParameterType::STRING)
                 ->bind(':value', $strValue, ParameterType::STRING)
-                ->bind(':autoload', (int) $autoload, ParameterType::INTEGER);
+                ->bind(':autoload', $autoloadInt, ParameterType::INTEGER);
         }
 
         $this->db->setQuery($query);

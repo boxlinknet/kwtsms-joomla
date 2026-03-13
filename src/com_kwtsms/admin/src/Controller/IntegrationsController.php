@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 
@@ -23,9 +24,9 @@ final class IntegrationsController extends BaseController
 		$model = $this->getModel('Integrations', 'Administrator');
 
 		if ($model->saveIntegrations($data)) {
-			$this->setMessage($this->getLanguage()->_('COM_KWTSMS_MSG_SAVED'));
+			$this->setMessage(Text::_('COM_KWTSMS_MSG_SAVED'));
 		} else {
-			$this->setMessage($this->getLanguage()->_('COM_KWTSMS_MSG_SAVE_FAILED'), 'error');
+			$this->setMessage(Text::_('COM_KWTSMS_MSG_SAVE_FAILED'), 'error');
 		}
 
 		$this->setRedirect(Route::_('index.php?option=com_kwtsms&view=integrations', false));

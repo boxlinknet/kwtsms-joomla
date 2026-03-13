@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 
@@ -22,7 +23,7 @@ final class LogsController extends BaseController
 		$model = $this->getModel('Logs', 'Administrator');
 		$model->clearLogs();
 
-		$this->setMessage($this->getLanguage()->_('COM_KWTSMS_MSG_LOGS_CLEARED'));
+		$this->setMessage(Text::_('COM_KWTSMS_MSG_LOGS_CLEARED'));
 		$this->setRedirect(Route::_('index.php?option=com_kwtsms&view=logs', false));
 	}
 
@@ -36,9 +37,10 @@ final class LogsController extends BaseController
 		$model = $this->getModel('Logs', 'Administrator');
 		$csv   = $model->exportCsv();
 
-		$this->getApplication()->setHeader('Content-Type', 'text/csv; charset=utf-8');
-		$this->getApplication()->setHeader('Content-Disposition', 'attachment; filename="kwtsms-logs.csv"');
+		$this->app->setHeader('Content-Type', 'text/csv; charset=utf-8');
+		$this->app->setHeader('Content-Disposition', 'attachment; filename="kwtsms-logs.csv"');
+		$this->app->sendHeaders();
 		echo $csv;
-		$this->getApplication()->close();
+		$this->app->close();
 	}
 }

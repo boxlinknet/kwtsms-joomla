@@ -21,7 +21,7 @@ final class DashboardModel extends BaseDatabaseModel
 	public function getStatus(): array
 	{
 		try {
-			$settings = Factory::getContainer()->get(SettingsService::class);
+			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
 
 			return [
 				'gateway_enabled'    => $settings->get('gateway_enabled', '0'),

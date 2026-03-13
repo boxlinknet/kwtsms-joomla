@@ -23,7 +23,7 @@ final class SettingsModel extends BaseDatabaseModel
 	public function getSettings(): array
 	{
 		try {
-			$settings = Factory::getContainer()->get(SettingsService::class);
+			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
 
 			return [
 				'gateway_enabled'    => $settings->get('gateway_enabled', '0'),
@@ -60,7 +60,7 @@ final class SettingsModel extends BaseDatabaseModel
 	{
 		try {
 			$filter   = InputFilter::getInstance();
-			$settings = Factory::getContainer()->get(SettingsService::class);
+			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
 
 			$settings->set('gateway_enabled', $filter->clean($data['gateway_enabled'] ?? '0', 'INT') ? '1' : '0');
 			$settings->set('test_mode', $filter->clean($data['test_mode'] ?? '1', 'INT') ? '1' : '0');
@@ -88,21 +88,28 @@ final class SettingsModel extends BaseDatabaseModel
 	}
 
 	/**
-	 * Test the API connection using current stored credentials.
+	 * Test the API connection. Uses provided credentials if given, otherwise uses stored credentials.
+	 *
+	 * @param string $username Optional username to test with (typed in form, not yet saved)
+	 * @param string $password Optional password to test with (typed in form, not yet saved)
 	 *
 	 * @return array API response from balance endpoint
 	 */
-	public function testConnection(): array
+	public function testConnection(string $username = '', string $password = ''): array
 	{
 		try {
-			$settings = Factory::getContainer()->get(SettingsService::class);
-			$creds    = $settings->getCredentials();
+			if ($username === '') {
+				$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
+				$creds    = $settings->getCredentials();
+				$username = $creds['username'];
+				$password = $creds['password'];
+			}
 
-			if (empty($creds['username'])) {
+			if (empty($username)) {
 				return ['result' => 'ERROR', 'description' => 'No credentials configured'];
 			}
 
-			$client = new KwtSmsApiClient($creds['username'], $creds['password']);
+			$client = new KwtSmsApiClient($username, $password);
 
 			return $client->balance();
 		} catch (\Throwable $e) {

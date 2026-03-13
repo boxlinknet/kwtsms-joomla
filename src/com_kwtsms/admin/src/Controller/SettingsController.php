@@ -4,6 +4,7 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 
@@ -23,9 +24,9 @@ final class SettingsController extends BaseController
 		$model = $this->getModel('Settings', 'Administrator');
 
 		if ($model->saveSettings($data)) {
-			$this->setMessage($this->getLanguage()->_('COM_KWTSMS_MSG_SAVED'));
+			$this->setMessage(Text::_('COM_KWTSMS_MSG_SAVED'));
 		} else {
-			$this->setMessage($this->getLanguage()->_('COM_KWTSMS_MSG_SAVE_FAILED'), 'error');
+			$this->setMessage(Text::_('COM_KWTSMS_MSG_SAVE_FAILED'), 'error');
 		}
 
 		$this->setRedirect(Route::_('index.php?option=com_kwtsms&view=settings', false));
@@ -38,11 +39,14 @@ final class SettingsController extends BaseController
 	{
 		$this->checkToken('get');
 
+		$username = $this->input->get->getString('api_username', '');
+		$password = $this->input->get->getString('api_password', '');
 		$model    = $this->getModel('Settings', 'Administrator');
-		$response = $model->testConnection();
+		$response = $model->testConnection($username, $password);
 
-		$this->getApplication()->setHeader('Content-Type', 'application/json; charset=utf-8');
+		$this->app->setHeader('Content-Type', 'application/json; charset=utf-8');
+		$this->app->sendHeaders();
 		echo json_encode($response);
-		$this->getApplication()->close();
+		$this->app->close();
 	}
 }

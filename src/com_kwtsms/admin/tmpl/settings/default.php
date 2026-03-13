@@ -138,7 +138,10 @@ document.getElementById('kwtsms-test-btn').addEventListener('click', function ()
 	var token = document.querySelector('input[name="<?php echo Session::getFormToken(); ?>"]');
 	var tokenValue = token ? token.value : '';
 
-	fetch('index.php?option=com_kwtsms&task=settings.testConnection&<?php echo Session::getFormToken(); ?>=1')
+	var username = encodeURIComponent(document.getElementById('api_username').value);
+	var password = encodeURIComponent(document.getElementById('api_password').value);
+
+	fetch('index.php?option=com_kwtsms&task=settings.testConnection&<?php echo Session::getFormToken(); ?>=1&api_username=' + username + '&api_password=' + password)
 		.then(function (r) { return r.json(); })
 		.then(function (data) {
 			if (data.result === 'OK') {

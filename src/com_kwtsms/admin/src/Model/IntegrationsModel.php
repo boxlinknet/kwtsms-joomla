@@ -22,7 +22,7 @@ final class IntegrationsModel extends BaseDatabaseModel
 	public function getIntegrations(): array
 	{
 		try {
-			$settings = Factory::getContainer()->get(SettingsService::class);
+			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
 
 			return [
 				'virtuemart' => [
@@ -57,7 +57,7 @@ final class IntegrationsModel extends BaseDatabaseModel
 	{
 		try {
 			$filter   = InputFilter::getInstance();
-			$settings = Factory::getContainer()->get(SettingsService::class);
+			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
 
 			$settings->set('integration_vm_enabled', isset($data['integration_vm_enabled']) ? '1' : '0');
 			$settings->set('integration_vm_order_new_enabled', isset($data['integration_vm_order_new']) ? '1' : '0');
