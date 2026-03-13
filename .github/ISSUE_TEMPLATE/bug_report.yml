@@ -1,0 +1,54 @@
+name: Bug Report
+description: Report a bug in the kwtSMS Joomla extension
+labels: [bug]
+body:
+  - type: input
+    id: joomla_version
+    attributes:
+      label: Joomla Version
+      placeholder: "e.g. 6.0.3"
+    validations:
+      required: true
+
+  - type: input
+    id: extension_version
+    attributes:
+      label: Extension Version
+      placeholder: "e.g. 1.0.0"
+    validations:
+      required: true
+
+  - type: input
+    id: php_version
+    attributes:
+      label: PHP Version
+      placeholder: "e.g. 8.3.4"
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Bug Description
+      description: What happened? What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      placeholder: |
+        1. Go to Settings tab
+        2. Enter credentials
+        3. Click Test Connection
+        4. See error
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant Logs
+      description: Paste any PHP error logs or kwtSMS Logs tab entries. Remove any credentials before posting.
+      render: text

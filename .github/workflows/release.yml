@@ -1,0 +1,48 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    name: Build and publish release
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract version from tag
+        id: version
+        run: |
+          TAG="${GITHUB_REF#refs/tags/}"
+          VERSION="${TAG#v}"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Build package ZIP
+        run: bash build.sh
+
+      - name: Rename ZIP to versioned name
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          cp "build/pkg_kwtsms-${VERSION}.zip" "pkg_kwtsms-${VERSION}.zip" 2>/dev/null || \
+          cp build/pkg_kwtsms-*.zip "pkg_kwtsms-${VERSION}.zip"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: kwtSMS for Joomla ${{ steps.version.outputs.tag }}
+          body: |
+            ## kwtSMS for Joomla ${{ steps.version.outputs.tag }}
+
+            Install via Joomla Extensions Manager: upload `pkg_kwtsms-${{ steps.version.outputs.version }}.zip`
+
+            See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details.
+          files: pkg_kwtsms-${{ steps.version.outputs.version }}.zip
+          draft: false
+          prerelease: ${{ contains(steps.version.outputs.tag, '-') }}
