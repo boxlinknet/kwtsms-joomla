@@ -1,5 +1,11 @@
 # kwtSMS for Joomla
 
+[![CI](https://github.com/boxlinknet/kwtsms-joomla/actions/workflows/ci.yml/badge.svg)](https://github.com/boxlinknet/kwtsms-joomla/actions/workflows/ci.yml)
+[![Latest Release](https://img.shields.io/github/v/release/boxlinknet/kwtsms-joomla)](https://github.com/boxlinknet/kwtsms-joomla/releases/latest)
+[![PHP](https://img.shields.io/badge/PHP-8.1%2B-777BB4?logo=php&logoColor=white)](https://www.php.net)
+[![Joomla](https://img.shields.io/badge/Joomla-4%2B-1A3867?logo=joomla&logoColor=white)](https://www.joomla.org)
+[![License](https://img.shields.io/badge/License-GPL%20v2%2B-blue)](LICENSE)
+
 A free Joomla extension that integrates the [kwtSMS](https://www.kwtsms.com) SMS gateway into your Joomla website. Send SMS notifications for orders, user registrations, OTP authentication, and more.
 
 ## Features
