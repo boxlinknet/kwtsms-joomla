@@ -48,7 +48,6 @@ Get your API credentials from your kwtSMS account at [www.kwtsms.com](https://ww
 ## Support
 
 - Documentation: [www.kwtsms.com/support.html](https://www.kwtsms.com/support.html)
-- Security issues: support@kwtsms.com
 
 ## License
 
