@@ -178,6 +178,18 @@ final class KwtSmsApiClient
         // Strip leading zeros (handles 00 country code prefix)
         $phone = ltrim($phone, '0');
 
+        // Strip trunk prefix 0 immediately after country code.
+        // e.g. 9660559xxxxx -> 966 + 0559xxxxx -> 966 + 559xxxxx (Saudi trunk prefix)
+        $cc = $this->findCountryCode($phone);
+
+        if ($cc !== null) {
+            $local = substr($phone, strlen($cc));
+
+            if (str_starts_with($local, '0')) {
+                $phone = $cc . substr($local, 1);
+            }
+        }
+
         return $phone;
     }
 
