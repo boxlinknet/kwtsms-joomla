@@ -13,6 +13,9 @@ use Joomla\Database\ParameterType;
  */
 final class TemplateResolver
 {
+    /** @var array<string, array<string, string>> In-memory cache: template_key => ['ar' => body, 'en' => body] */
+    private array $cache = [];
+
     public function __construct(
         private readonly DatabaseInterface $db
     ) {
@@ -32,12 +35,8 @@ final class TemplateResolver
         // Determine language: ar if locale starts with 'ar', otherwise en
         $lang = str_starts_with(strtolower($locale), 'ar') ? 'ar' : 'en';
 
-        $body = $this->fetchBody($templateKey, $lang);
-
-        // Fallback to English if not found in requested language
-        if ($body === null && $lang !== 'en') {
-            $body = $this->fetchBody($templateKey, 'en');
-        }
+        $bodies = $this->fetchBodies($templateKey);
+        $body   = $bodies[$lang] ?? $bodies['en'] ?? null;
 
         if ($body === null) {
             return '';
@@ -77,24 +76,35 @@ final class TemplateResolver
     }
 
     /**
-     * Fetch the body of a template by key and language.
+     * Fetch both AR and EN bodies for a template in one query, with in-memory caching.
      *
-     * @return string|null Body text, or null if not found or disabled
+     * @return array<string, string> Map of lang => body for available languages
      */
-    private function fetchBody(string $templateKey, string $lang): ?string
+    private function fetchBodies(string $templateKey): array
     {
+        if (isset($this->cache[$templateKey])) {
+            return $this->cache[$templateKey];
+        }
+
         $query = $this->db->getQuery(true)
-            ->select($this->db->quoteName('body'))
+            ->select($this->db->quoteName(['lang', 'body']))
             ->from($this->db->quoteName('#__kwtsms_templates'))
             ->where($this->db->quoteName('template_key') . ' = :key')
-            ->where($this->db->quoteName('lang') . ' = :lang')
+            ->where($this->db->quoteName('lang') . ' IN (' . $this->db->quote('ar') . ', ' . $this->db->quote('en') . ')')
             ->where($this->db->quoteName('enabled') . ' = 1');
 
         $query->bind(':key', $templateKey, ParameterType::STRING);
-        $query->bind(':lang', $lang, ParameterType::STRING);
 
-        $result = $this->db->setQuery($query)->loadResult();
+        $rows = $this->db->setQuery($query)->loadAssocList() ?: [];
 
-        return $result === null ? null : (string) $result;
+        $bodies = [];
+
+        foreach ($rows as $row) {
+            $bodies[$row['lang']] = (string) $row['body'];
+        }
+
+        $this->cache[$templateKey] = $bodies;
+
+        return $bodies;
     }
 }

@@ -4,6 +4,8 @@ namespace KwtSMS\Component\Kwtsms\Administrator\Controller;
 
 defined('_JEXEC') or die;
 
+use Joomla\CMS\Access\Exception\NotAllowed;
+use Joomla\CMS\Language\Text;
 use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 
@@ -17,10 +19,14 @@ final class TemplatesController extends BaseController
      */
     public function toggleEnabled(): void
     {
-        $this->checkToken('get');
+        $this->checkToken();
 
-        $id      = $this->input->getInt('id', 0);
-        $enabled = $this->input->getInt('enabled', 0);
+        if (!$this->app->getIdentity()->authorise('core.manage', 'com_kwtsms')) {
+            throw new NotAllowed(Text::_('JERROR_ALERTNOAUTHOR'), 403);
+        }
+
+        $id      = $this->input->post->getInt('id', 0);
+        $enabled = $this->input->post->getInt('enabled', 0);
         $model   = $this->getModel('Templates', 'Administrator');
 
         $model->toggleEnabled($id, $enabled ? 0 : 1);

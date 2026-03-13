@@ -13,21 +13,94 @@ use Joomla\Database\ParameterType;
 final class LogsModel extends BaseDatabaseModel
 {
 	/**
-	 * Get log entries with optional filters.
+	 * Get log entries with optional filters. Defaults to 200-row limit (0 = no limit).
 	 *
 	 * @param array{level?: string, context?: string, search?: string, date_from?: string, date_to?: string} $filters
+	 * @param int $limit Row limit; 0 means no limit
 	 *
 	 * @return array<int, array<string, mixed>>
 	 */
-	public function getLogs(array $filters = []): array
+	public function getLogs(array $filters = [], int $limit = 200): array
 	{
 		$db    = $this->getDatabase();
 		$query = $db->getQuery(true)
 			->select($db->quoteName(['id', 'level', 'context', 'message', 'data', 'created']))
 			->from($db->quoteName('#__kwtsms_logs'))
-			->order($db->quoteName('created') . ' DESC')
-			->setLimit(200);
+			->order($db->quoteName('created') . ' DESC');
 
+		if ($limit > 0) {
+			$query->setLimit($limit);
+		}
+
+		$this->applyFilters($query, $db, $filters);
+
+		return $db->setQuery($query)->loadAssocList() ?: [];
+	}
+
+	/**
+	 * Count log entries matching filters (no row limit).
+	 *
+	 * @param array{level?: string, context?: string, search?: string, date_from?: string, date_to?: string} $filters
+	 *
+	 * @return int
+	 */
+	public function countLogs(array $filters = []): int
+	{
+		$db    = $this->getDatabase();
+		$query = $db->getQuery(true)
+			->select('COUNT(*)')
+			->from($db->quoteName('#__kwtsms_logs'));
+
+		$this->applyFilters($query, $db, $filters);
+
+		return (int) ($db->setQuery($query)->loadResult() ?? 0);
+	}
+
+	/**
+	 * Delete all log entries.
+	 *
+	 * @return int Number of rows deleted
+	 */
+	public function clearLogs(): int
+	{
+		$db = $this->getDatabase();
+		$db->setQuery('DELETE FROM ' . $db->quoteName('#__kwtsms_logs'))->execute();
+
+		return $db->getAffectedRows();
+	}
+
+	/**
+	 * Export logs matching filters as a CSV string (no row limit).
+	 *
+	 * @param array{level?: string, context?: string, search?: string, date_from?: string, date_to?: string} $filters
+	 *
+	 * @return string CSV content
+	 */
+	public function exportCsv(array $filters = []): string
+	{
+		$logs = $this->getLogs($filters, 0);
+
+		$output = implode(',', ['id', 'level', 'context', 'message', 'data', 'created']) . "\n";
+
+		foreach ($logs as $log) {
+			$output .= implode(',', array_map(
+				static fn(mixed $v): string => '"' . str_replace('"', '""', (string) $v) . '"',
+				$log
+			)) . "\n";
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Apply filter conditions to a query object.
+	 *
+	 * @param \Joomla\Database\DatabaseQuery $query
+	 * @param \Joomla\Database\DatabaseInterface $db
+	 * @param array $filters
+	 */
+	private function applyFilters(object $query, object $db, array $filters): void
+	{
 		if (!empty($filters['level'])) {
 			$level = $filters['level'];
 			$query->where($db->quoteName('level') . ' = :level');
@@ -57,39 +130,5 @@ final class LogsModel extends BaseDatabaseModel
 			$query->where($db->quoteName('created') . ' <= :date_to');
 			$query->bind(':date_to', $dt, ParameterType::STRING);
 		}
-
-		return $db->setQuery($query)->loadAssocList() ?: [];
-	}
-
-	/**
-	 * Delete all log entries.
-	 *
-	 * @return int Number of rows deleted
-	 */
-	public function clearLogs(): int
-	{
-		$db = $this->getDatabase();
-		$db->setQuery('DELETE FROM ' . $db->quoteName('#__kwtsms_logs'))->execute();
-
-		return $db->getAffectedRows();
-	}
-
-	/**
-	 * Export all logs as a CSV string.
-	 */
-	public function exportCsv(): string
-	{
-		$logs = $this->getLogs();
-
-		$output = implode(',', ['id', 'level', 'context', 'message', 'data', 'created']) . "\n";
-
-		foreach ($logs as $log) {
-			$output .= implode(',', array_map(
-				static fn(mixed $v): string => '"' . str_replace('"', '""', (string) $v) . '"',
-				$log
-			)) . "\n";
-		}
-
-		return $output;
 	}
 }

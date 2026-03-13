@@ -35,13 +35,18 @@ HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
                 </td>
                 <td><?php echo htmlspecialchars($t['title'], ENT_QUOTES, 'UTF-8'); ?></td>
                 <td>
-                    <a href="<?php echo Route::_('index.php?option=com_kwtsms&task=templates.toggleEnabled&id=' . (int)$t['id'] . '&enabled=' . (int)$t['enabled'] . '&' . \Joomla\CMS\Session\Session::getFormToken() . '=1', false); ?>">
-                        <?php if ($t['enabled']) : ?>
-                            <span class="badge bg-success"><?php echo Text::_('JENABLED'); ?></span>
-                        <?php else : ?>
-                            <span class="badge bg-danger"><?php echo Text::_('JDISABLED'); ?></span>
-                        <?php endif; ?>
-                    </a>
+                    <form method="post" action="<?php echo Route::_('index.php?option=com_kwtsms&task=templates.toggleEnabled', false); ?>" style="display:inline">
+                        <?php echo HTMLHelper::_('form.token'); ?>
+                        <input type="hidden" name="id" value="<?php echo (int) $t['id']; ?>">
+                        <input type="hidden" name="enabled" value="<?php echo (int) $t['enabled']; ?>">
+                        <button type="submit" class="btn btn-link p-0 border-0 align-baseline">
+                            <?php if ($t['enabled']) : ?>
+                                <span class="badge bg-success"><?php echo Text::_('JENABLED'); ?></span>
+                            <?php else : ?>
+                                <span class="badge bg-danger"><?php echo Text::_('JDISABLED'); ?></span>
+                            <?php endif; ?>
+                        </button>
+                    </form>
                 </td>
                 <td>
                     <a href="<?php echo Route::_('index.php?option=com_kwtsms&view=template&id=' . (int)$t['id'], false); ?>"

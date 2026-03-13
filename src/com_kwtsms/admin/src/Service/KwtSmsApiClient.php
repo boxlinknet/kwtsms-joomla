@@ -38,12 +38,12 @@ final class KwtSmsApiClient
         $phone = str_replace(self::EXTENDED_ARABIC_INDIC, self::LATIN_DIGITS, $phone);
 
         // Strip all non-digit characters
-        $phone = preg_replace('/\D/', '', $phone);
+        $phone = preg_replace('/\D/', '', $phone) ?? '';
 
         // Strip leading zeros (handles 00 country code prefix)
         $phone = ltrim($phone, '0');
 
-        return $phone ?? '';
+        return $phone;
     }
 
     /**
@@ -212,7 +212,8 @@ final class KwtSmsApiClient
 
         // 10. Update balance on success
         if (($response['result'] ?? '') === 'OK' && $settings !== null) {
-            $settings->updateBalance((float) ($response['balance-after'] ?? 0));
+            $balanceAfter = max(0.0, min(999999.99, (float) ($response['balance-after'] ?? 0)));
+            $settings->updateBalance($balanceAfter);
         }
 
         return $response;
@@ -252,7 +253,8 @@ final class KwtSmsApiClient
             $response = $this->post('send', $payload);
 
             if (($response['result'] ?? '') === 'OK' && $settings !== null) {
-                $settings->updateBalance((float) ($response['balance-after'] ?? 0));
+                $balanceAfter = max(0.0, min(999999.99, (float) ($response['balance-after'] ?? 0)));
+                $settings->updateBalance($balanceAfter);
             }
 
             $results[] = $response;

@@ -66,21 +66,30 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
                 return true;
             }
 
-            $credentials = $settings->getCredentials();
-            $client      = new KwtSmsApiClient($credentials['username'], $credentials['password']);
-            $phone       = $client->normalize($rawPhone);
+            $client = $this->getApiClient($settings);
+
+            if ($client === null) {
+                return true;
+            }
+
+            $phone = $client->normalize($rawPhone);
 
             if (empty($phone)) {
                 return true;
             }
 
-            $locale      = !empty($billingAddress->language) ? $billingAddress->language : (string) Factory::getLanguage()->getTag();
-            $resolver    = $this->getTemplateResolver();
-            $shopName    = Factory::getApplication()->get('sitename', 'Our Shop');
-            $orderId     = $order['details']['BT']->virtuemart_order_id ?? '';
-            $orderTotal  = $order['details']['BT']->order_total ?? '';
-            $firstName   = $billingAddress->first_name ?? '';
-            $lastName    = $billingAddress->last_name ?? '';
+            $resolver = $this->getTemplateResolver();
+
+            if ($resolver === null) {
+                return true;
+            }
+
+            $locale       = !empty($billingAddress->language) ? $billingAddress->language : (string) Factory::getLanguage()->getTag();
+            $shopName     = Factory::getApplication()->get('sitename', 'Our Shop');
+            $orderId      = $order['details']['BT']->virtuemart_order_id ?? '';
+            $orderTotal   = $order['details']['BT']->order_total ?? '';
+            $firstName    = $billingAddress->first_name ?? '';
+            $lastName     = $billingAddress->last_name ?? '';
             $customerName = trim($firstName . ' ' . $lastName) ?: 'Customer';
 
             $message = $resolver->resolve('order_new', $locale, [
@@ -127,12 +136,21 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
                 return true;
             }
 
-            $credentials = $settings->getCredentials();
-            $client      = new KwtSmsApiClient($credentials['username'], $credentials['password']);
-            $resolver    = $this->getTemplateResolver();
-            $sender      = $settings->get('sender_id', 'KWT-SMS');
-            $testMode    = $settings->get('test_mode', '1') === '1';
-            $shopName    = Factory::getApplication()->get('sitename', 'Our Shop');
+            $client = $this->getApiClient($settings);
+
+            if ($client === null) {
+                return true;
+            }
+
+            $resolver = $this->getTemplateResolver();
+
+            if ($resolver === null) {
+                return true;
+            }
+
+            $sender   = $settings->get('sender_id', 'KWT-SMS');
+            $testMode = $settings->get('test_mode', '1') === '1';
+            $shopName = Factory::getApplication()->get('sitename', 'Our Shop');
 
             foreach ($orders as $order) {
                 $billingAddress = $order->BT ?? null;
@@ -153,11 +171,11 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
                     continue;
                 }
 
-                $locale      = (string) Factory::getLanguage()->getTag();
-                $firstName   = $billingAddress->first_name ?? '';
-                $lastName    = $billingAddress->last_name ?? '';
+                $locale       = (string) Factory::getLanguage()->getTag();
+                $firstName    = $billingAddress->first_name ?? '';
+                $lastName     = $billingAddress->last_name ?? '';
                 $customerName = trim($firstName . ' ' . $lastName) ?: 'Customer';
-                $orderId     = $order->virtuemart_order_id ?? '';
+                $orderId      = $order->virtuemart_order_id ?? '';
 
                 $message = $resolver->resolve('order_status_update', $locale, [
                     'customer_name' => $customerName,
@@ -180,6 +198,20 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
     }
 
     /**
+     * Build an API client from stored credentials. Returns null if credentials are missing.
+     */
+    private function getApiClient(SettingsService $settings): ?KwtSmsApiClient
+    {
+        $credentials = $settings->getCredentials();
+
+        if (empty($credentials['username'])) {
+            return null;
+        }
+
+        return new KwtSmsApiClient($credentials['username'], $credentials['password']);
+    }
+
+    /**
      * Load SettingsService from the component DI container.
      */
     private function getSettingsService(): ?SettingsService
@@ -194,8 +226,12 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
     /**
      * Load TemplateResolver from the component DI container.
      */
-    private function getTemplateResolver(): TemplateResolver
+    private function getTemplateResolver(): ?TemplateResolver
     {
-        return Factory::getContainer()->get(TemplateResolver::class);
+        try {
+            return Factory::getContainer()->get(TemplateResolver::class);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }

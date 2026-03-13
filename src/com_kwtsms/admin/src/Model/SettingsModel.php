@@ -105,7 +105,7 @@ final class SettingsModel extends BaseDatabaseModel
 				$password = $creds['password'];
 			}
 
-			if (empty($username)) {
+			if (empty($username) || empty($password)) {
 				return ['result' => 'ERROR', 'description' => 'No credentials configured'];
 			}
 

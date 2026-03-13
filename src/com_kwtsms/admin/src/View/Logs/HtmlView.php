@@ -13,11 +13,14 @@ use Joomla\CMS\Toolbar\ToolbarHelper;
  */
 final class HtmlView extends BaseHtmlView
 {
-	/** @var array<int, array<string, mixed>> Log entries */
+	/** @var array<int, array<string, mixed>> Log entries (capped at 200) */
 	public array $logs = [];
 
 	/** @var array<string, string> Current filter values */
 	public array $filters = [];
+
+	/** @var int Total matching entries without the 200-row cap */
+	public int $total = 0;
 
 	/**
 	 * Display the view.
@@ -36,7 +39,8 @@ final class HtmlView extends BaseHtmlView
 			'date_to'   => $this->sanitizeDate($input->getString('filter_to', '')),
 		];
 
-		$this->logs = $this->getModel()->getLogs($this->filters);
+		$this->logs  = $this->getModel()->getLogs($this->filters);
+		$this->total = $this->getModel()->countLogs($this->filters);
 
 		ToolbarHelper::title('kwtSMS', 'phone');
 

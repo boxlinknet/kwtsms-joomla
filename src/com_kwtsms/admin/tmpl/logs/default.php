@@ -5,7 +5,6 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
-use Joomla\CMS\Session\Session;
 
 HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 
@@ -53,14 +52,25 @@ $levelColors = [
 	</form>
 
 	<!-- Action Buttons -->
-	<div class="d-flex gap-2 mb-3">
+	<div class="d-flex gap-2 mb-3 align-items-center">
 		<form method="post" action="<?php echo Route::_('index.php?option=com_kwtsms&task=logs.clearLogs', false); ?>"
 			  onsubmit="return confirm('<?php echo Text::_('COM_KWTSMS_MSG_CONFIRM_CLEAR'); ?>');">
 			<?php echo HTMLHelper::_('form.token'); ?>
 			<button type="submit" class="btn btn-sm btn-outline-danger"><?php echo Text::_('COM_KWTSMS_CLEAR_LOGS'); ?></button>
 		</form>
-		<a href="<?php echo Route::_('index.php?option=com_kwtsms&task=logs.exportCsv&' . Session::getFormToken() . '=1', false); ?>"
-		   class="btn btn-sm btn-outline-secondary"><?php echo Text::_('COM_KWTSMS_EXPORT_CSV'); ?></a>
+		<form method="post" action="<?php echo Route::_('index.php?option=com_kwtsms&task=logs.exportCsv', false); ?>">
+			<?php echo HTMLHelper::_('form.token'); ?>
+			<input type="hidden" name="filter_level" value="<?php echo htmlspecialchars($this->filters['level'], ENT_QUOTES, 'UTF-8'); ?>">
+			<input type="hidden" name="filter_search" value="<?php echo htmlspecialchars($this->filters['search'], ENT_QUOTES, 'UTF-8'); ?>">
+			<input type="hidden" name="filter_from" value="<?php echo htmlspecialchars($this->filters['date_from'], ENT_QUOTES, 'UTF-8'); ?>">
+			<input type="hidden" name="filter_to" value="<?php echo htmlspecialchars($this->filters['date_to'], ENT_QUOTES, 'UTF-8'); ?>">
+			<button type="submit" class="btn btn-sm btn-outline-secondary"><?php echo Text::_('COM_KWTSMS_EXPORT_CSV'); ?></button>
+		</form>
+		<?php if ($this->total > 200) : ?>
+			<small class="text-muted ms-auto">Showing 200 of <?php echo (int) $this->total; ?> entries</small>
+		<?php elseif ($this->total > 0) : ?>
+			<small class="text-muted ms-auto"><?php echo (int) $this->total; ?> entries</small>
+		<?php endif; ?>
 	</div>
 
 	<!-- Logs Table -->

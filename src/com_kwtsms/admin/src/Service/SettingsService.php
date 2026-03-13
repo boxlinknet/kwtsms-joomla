@@ -107,11 +107,13 @@ final class SettingsService
     }
 
     /**
-     * Encrypt plaintext using AES-256-CBC.
+     * Encrypt plaintext using AES-256-GCM.
+     *
+     * Output format: "gcm:" + base64(12-byte nonce + 16-byte auth tag + ciphertext)
      *
      * @param  string  $plaintext  The text to encrypt
      *
-     * @return string The base64-encoded ciphertext (IV + data), or empty string on failure
+     * @return string The encoded ciphertext with gcm: prefix, or empty string on failure
      */
     public function encrypt(string $plaintext): string
     {
@@ -119,20 +121,21 @@ final class SettingsService
             return '';
         }
 
-        $iv = random_bytes(16);
-        $encrypted = openssl_encrypt($plaintext, 'AES-256-CBC', $this->getAesKey(), OPENSSL_RAW_DATA, $iv);
+        $iv        = random_bytes(12); // GCM uses 12-byte nonce
+        $tag       = '';
+        $encrypted = openssl_encrypt($plaintext, 'AES-256-GCM', $this->getAesKey(), OPENSSL_RAW_DATA, $iv, $tag);
 
         if ($encrypted === false) {
             return '';
         }
 
-        return base64_encode($iv . $encrypted);
+        return 'gcm:' . base64_encode($iv . $tag . $encrypted);
     }
 
     /**
-     * Decrypt ciphertext using AES-256-CBC.
+     * Decrypt ciphertext. Supports GCM (new, "gcm:" prefix) and legacy CBC format.
      *
-     * @param  string  $ciphertext  The base64-encoded ciphertext (IV + data)
+     * @param  string  $ciphertext  Encoded ciphertext
      *
      * @return string The decrypted plaintext, or empty string on failure
      */
@@ -142,15 +145,31 @@ final class SettingsService
             return '';
         }
 
+        // GCM format: "gcm:" + base64(12-byte nonce + 16-byte tag + ciphertext)
+        if (str_starts_with($ciphertext, 'gcm:')) {
+            $decoded = base64_decode(substr($ciphertext, 4), true);
+
+            if ($decoded === false || strlen($decoded) < 29) { // 12 + 16 + at least 1 byte
+                return '';
+            }
+
+            $iv     = substr($decoded, 0, 12);
+            $tag    = substr($decoded, 12, 16);
+            $data   = substr($decoded, 28);
+            $result = openssl_decrypt($data, 'AES-256-GCM', $this->getAesKey(), OPENSSL_RAW_DATA, $iv, $tag);
+
+            return $result !== false ? $result : '';
+        }
+
+        // Legacy CBC format: base64(16-byte IV + ciphertext)
         $decoded = base64_decode($ciphertext, true);
 
         if ($decoded === false || strlen($decoded) < 17) {
             return '';
         }
 
-        $iv = substr($decoded, 0, 16);
-        $data = substr($decoded, 16);
-
+        $iv     = substr($decoded, 0, 16);
+        $data   = substr($decoded, 16);
         $result = openssl_decrypt($data, 'AES-256-CBC', $this->getAesKey(), OPENSSL_RAW_DATA, $iv);
 
         return $result !== false ? $result : '';

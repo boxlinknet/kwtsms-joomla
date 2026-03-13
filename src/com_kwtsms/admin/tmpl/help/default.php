@@ -106,7 +106,8 @@ HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 						<li><strong>Security Issues:</strong> <a href="mailto:support@kwtsms.com">support@kwtsms.com</a></li>
 					</ul>
 
-					<hr>
+					<?php if ($this->isAdmin) : ?>
+				<hr>
 
 					<table class="table table-sm">
 						<tbody>
@@ -124,6 +125,7 @@ HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 							</tr>
 						</tbody>
 					</table>
+				<?php endif; ?>
 				</div>
 			</div>
 		</div>
