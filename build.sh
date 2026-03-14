@@ -20,8 +20,9 @@ for ext in com_kwtsms plg_system_kwtsms plg_task_kwtsms plg_vmcustom_kwtsms; do
         --exclude ".gitkeep")
 done
 
-# Copy package manifest into pkg dir
+# Copy package manifest and language files into pkg dir
 cp "${SRC_DIR}/pkg_kwtsms.xml" "${BUILD_DIR}/pkg_kwtsms/"
+cp -r "${SRC_DIR}/language" "${BUILD_DIR}/pkg_kwtsms/"
 
 # Build final package ZIP
 (cd "${BUILD_DIR}" && zip -r "pkg_kwtsms-${VERSION}.zip" pkg_kwtsms/)

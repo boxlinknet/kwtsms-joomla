@@ -5,15 +5,20 @@
  * @license     GNU General Public License version 2 or later; see LICENSE
 -->
 <extension type="package" method="upgrade">
-    <name>pkg_kwtsms</name>
+    <name>kwtSMS for Joomla</name>
     <packagename>kwtsms</packagename>
     <author>kwtSMS</author>
     <authorEmail>support@kwtsms.com</authorEmail>
     <authorUrl>https://www.kwtsms.com</authorUrl>
+    <creationDate>2025-03-14</creationDate>
     <version>1.2.0</version>
-    <description>kwtSMS SMS Gateway for Joomla - Complete Package</description>
+    <description>PKG_KWTSMS_DESCRIPTION</description>
     <license>GPL v2 or later</license>
     <blockChildUninstall>true</blockChildUninstall>
+    <languages>
+        <language tag="en-GB">language/en-GB/en-GB.pkg_kwtsms.sys.ini</language>
+        <language tag="en-GB">language/en-GB/en-GB.kwtsmsforjoomla.sys.ini</language>
+    </languages>
     <files folder="constituents">
         <file type="component" id="com_kwtsms">com_kwtsms.zip</file>
         <file type="plugin" id="kwtsms" group="system">plg_system_kwtsms.zip</file>
