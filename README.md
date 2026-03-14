@@ -13,11 +13,11 @@ A free Joomla extension that integrates the [kwtSMS](https://www.kwtsms.com) SMS
 - A2P SMS notifications via kwtSMS REST/JSON API
 - VirtueMart order notifications (new order, status updates)
 - 6-tab admin panel: Dashboard, Settings, Templates, Integrations, Logs, Help
-- Multilingual: English and Arabic (RTL)
+- Multilingual: English and Arabic
 - Daily auto-sync of balance, sender IDs, and coverage
 - Full send pipeline: phone normalization, coverage check, message cleaning
 - All sent messages logged locally with full API response
-- Test mode support (test=1)
+- Test mode: queue messages without delivery for safe development
 
 ## Requirements
 

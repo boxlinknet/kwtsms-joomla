@@ -86,7 +86,7 @@
     color: #dc3545;
 }
 
-/* RTL support for Arabic admin */
+/* Arabic layout support */
 [dir="rtl"] .kwtsms-status-card {
     border-left: none;
     border-right: 4px solid #FFA200;
