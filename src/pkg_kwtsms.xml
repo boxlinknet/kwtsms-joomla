@@ -21,6 +21,6 @@
         <file type="plugin" id="kwtsms" group="vmcustom">plg_vmcustom_kwtsms.zip</file>
     </files>
     <updateservers>
-        <server type="package" priority="1" name="kwtSMS Update Server">https://www.kwtsms.com/joomla/update.xml</server>
+        <server type="package" priority="1" name="kwtSMS Update Server">https://raw.githubusercontent.com/boxlinknet/kwtsms-joomla/main/update.xml</server>
     </updateservers>
 </extension>
