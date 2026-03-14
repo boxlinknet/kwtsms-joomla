@@ -140,7 +140,7 @@ $gatewayOk = $this->status['gateway_enabled'] === '1' && $this->status['gateway_
 	</div>
 
 	<!-- Action Buttons -->
-	<div class="d-flex gap-2">
+	<div class="d-flex gap-2 mb-4">
 		<form method="post" action="<?php echo Route::_('index.php?option=com_kwtsms&task=dashboard.syncNow', false); ?>">
 			<?php echo HTMLHelper::_('form.token'); ?>
 			<button type="submit" class="btn btn-kwtsms">
@@ -148,5 +148,44 @@ $gatewayOk = $this->status['gateway_enabled'] === '1' && $this->status['gateway_
 			</button>
 		</form>
 	</div>
+
+	<!-- Send Test SMS -->
+	<?php if ($gatewayOk) : ?>
+	<div class="card mb-3">
+		<div class="card-header kwtsms-card-header"><?php echo Text::_('COM_KWTSMS_TEST_SMS'); ?></div>
+		<div class="card-body">
+			<form method="post" action="<?php echo Route::_('index.php?option=com_kwtsms&task=dashboard.sendTest', false); ?>">
+				<?php echo HTMLHelper::_('form.token'); ?>
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label" for="test_phone"><?php echo Text::_('COM_KWTSMS_TEST_PHONE'); ?></label>
+					<div class="col-sm-4">
+						<input type="text" class="form-control" id="test_phone" name="test_phone"
+							   placeholder="96598765432" maxlength="15" pattern="\d{7,15}"
+							   required>
+						<div class="form-text"><?php echo Text::_('COM_KWTSMS_TEST_PHONE_HINT'); ?></div>
+					</div>
+				</div>
+				<div class="row mb-3">
+					<label class="col-sm-3 col-form-label" for="test_message"><?php echo Text::_('COM_KWTSMS_TEST_MESSAGE'); ?></label>
+					<div class="col-sm-6">
+						<input type="text" class="form-control" id="test_message" name="test_message"
+							   value="Test SMS from kwtSMS Joomla extension" maxlength="160"
+							   required>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-sm-9 offset-sm-3">
+						<button type="submit" class="btn btn-outline-success">
+							<?php echo Text::_('COM_KWTSMS_TEST_SMS'); ?>
+						</button>
+						<?php if ($this->status['test_mode'] === '1') : ?>
+							<span class="ms-2 text-muted"><?php echo Text::_('COM_KWTSMS_TEST_SMS_NOTE'); ?></span>
+						<?php endif; ?>
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+	<?php endif; ?>
 
 </div>
