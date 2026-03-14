@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ * @package     kwtSMS for Joomla
+ * @copyright   Copyright (C) 2025 kwtSMS. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
+-->
 <extension type="plugin" group="system" method="upgrade">
     <name>plg_system_kwtsms</name>
     <author>kwtSMS</author>
     <authorEmail>support@kwtsms.com</authorEmail>
     <authorUrl>https://www.kwtsms.com</authorUrl>
-    <version>1.1.1</version>
+    <version>1.2.0</version>
     <description>PLG_SYSTEM_KWTSMS_DESCRIPTION</description>
     <license>GPL v2 or later</license>
     <namespace path="src">KwtSMS\Plugin\System\Kwtsms</namespace>
@@ -15,6 +20,8 @@
     </files>
     <languages>
         <language tag="en-GB">language/en-GB.plg_system_kwtsms.ini</language>
+        <language tag="en-GB">language/en-GB.plg_system_kwtsms.sys.ini</language>
         <language tag="ar-AA">language/ar-AA.plg_system_kwtsms.ini</language>
+        <language tag="ar-AA">language/ar-AA.plg_system_kwtsms.sys.ini</language>
     </languages>
 </extension>

@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+ * @package     kwtSMS for Joomla
+ * @copyright   Copyright (C) 2025 kwtSMS. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
+-->
 <access component="com_kwtsms">
 	<section name="component">
 		<action name="core.admin" title="JACTION_ADMIN" />

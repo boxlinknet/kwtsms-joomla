@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package     kwtSMS for Joomla
+ * @copyright   Copyright (C) 2025 kwtSMS. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
+ */
 
 defined('_JEXEC') or die;
 
@@ -38,7 +43,7 @@ $levelColors = [
 		</div>
 
 		<div class="col-auto">
-			<label class="form-label"><?php echo Text::_('JSEARCH'); ?></label>
+			<label class="form-label"><?php echo Text::_('JSEARCH_FILTER'); ?></label>
 			<input type="text" class="form-control form-control-sm" name="filter_search"
 				   value="<?php echo htmlspecialchars($this->filters['search'], ENT_QUOTES, 'UTF-8'); ?>"
 				   placeholder="<?php echo Text::_('COM_KWTSMS_LOG_MESSAGE'); ?>">

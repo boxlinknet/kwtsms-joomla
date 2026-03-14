@@ -1,4 +1,9 @@
 <?php
+/**
+ * @package     kwtSMS for Joomla
+ * @copyright   Copyright (C) 2025 kwtSMS. All rights reserved.
+ * @license     GNU General Public License version 2 or later; see LICENSE
+ */
 
 namespace KwtSMS\Component\Kwtsms\Administrator\Model;
 
@@ -98,10 +103,14 @@ final class SettingsModel extends BaseDatabaseModel
 	public function testConnection(string $username = '', string $password = ''): array
 	{
 		try {
+			$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
+			$creds    = $settings->getCredentials();
+
 			if ($username === '') {
-				$settings = new SettingsService($this->getDatabase(), Factory::getApplication()->get('secret', ''));
-				$creds    = $settings->getCredentials();
 				$username = $creds['username'];
+			}
+
+			if ($password === '') {
 				$password = $creds['password'];
 			}
 
