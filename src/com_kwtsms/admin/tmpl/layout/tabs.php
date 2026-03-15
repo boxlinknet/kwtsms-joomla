@@ -35,5 +35,10 @@ $tabs = [
                 </a>
             </li>
         <?php endforeach; ?>
+        <li class="nav-item ms-auto" role="presentation">
+            <a class="nav-link text-muted" href="https://www.kwtsms.com/login/" target="_blank" rel="noopener noreferrer">
+                kwtSMS Dashboard &#8599;
+            </a>
+        </li>
     </ul>
 </div>

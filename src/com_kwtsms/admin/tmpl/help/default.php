@@ -10,7 +10,7 @@ defined('_JEXEC') or die;
 use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 
-HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
+HTMLHelper::_('stylesheet', 'media/com_kwtsms/css/kwtsms.css');
 ?>
 
 <?php include JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/layout/tabs.php'; ?>
@@ -33,43 +33,6 @@ HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
 						<li>Select your Sender ID in Settings, enable VirtueMart events in <strong>Integrations</strong>.</li>
 						<li>Enable the gateway. Disable Test Mode only when ready for production.</li>
 					</ol>
-				</div>
-			</div>
-		</div>
-
-		<!-- SenderID Guide -->
-		<div class="col-lg-6">
-			<div class="card h-100">
-				<div class="card-header kwtsms-card-header">SenderID Guide</div>
-				<div class="card-body">
-					<p>There are two types of Sender ID:</p>
-					<table class="table table-sm table-bordered">
-						<thead>
-							<tr>
-								<th></th>
-								<th>Promotional</th>
-								<th>Transactional</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Use for</td>
-								<td>Bulk/marketing</td>
-								<td>OTP, order notifications</td>
-							</tr>
-							<tr>
-								<td>DND numbers</td>
-								<td>Blocked</td>
-								<td>Bypassed</td>
-							</tr>
-							<tr>
-								<td>Cost</td>
-								<td>10 KD</td>
-								<td>15 KD</td>
-							</tr>
-						</tbody>
-					</table>
-					<p class="text-warning"><strong>Note:</strong> <code>KWT-SMS</code> is for testing only. Never use it in production.</p>
 				</div>
 			</div>
 		</div>

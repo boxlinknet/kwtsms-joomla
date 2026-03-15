@@ -11,7 +11,7 @@ use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Router\Route;
 
-HTMLHelper::_('stylesheet', 'com_kwtsms/css/kwtsms.css', [], true);
+HTMLHelper::_('stylesheet', 'media/com_kwtsms/css/kwtsms.css');
 ?>
 
 <?php include JPATH_COMPONENT_ADMINISTRATOR . '/tmpl/layout/tabs.php'; ?>

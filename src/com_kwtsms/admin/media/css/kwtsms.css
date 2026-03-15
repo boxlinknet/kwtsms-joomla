@@ -17,17 +17,27 @@
 }
 
 /* Primary button variant */
-.btn-kwtsms {
-    background-color: #FFA200;
-    border-color: #FFA200;
-    color: #ffffff;
+.btn-kwtsms,
+button.btn-kwtsms,
+a.btn-kwtsms {
+    background-color: #FFA200 !important;
+    border: 2px solid #FFA200 !important;
+    color: #ffffff !important;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .btn-kwtsms:hover,
-.btn-kwtsms:focus {
-    background-color: #cc8200;
-    border-color: #cc8200;
-    color: #ffffff;
+.btn-kwtsms:focus,
+button.btn-kwtsms:hover,
+a.btn-kwtsms:hover {
+    background-color: #cc8200 !important;
+    border-color: #cc8200 !important;
+    color: #ffffff !important;
 }
 
 /* Status badge variants */

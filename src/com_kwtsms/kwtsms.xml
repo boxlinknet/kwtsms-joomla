@@ -15,12 +15,15 @@
 	<license>GPL v2 or later</license>
 	<namespace path="src">KwtSMS\Component\Kwtsms</namespace>
 
+	<media destination="com_kwtsms" folder="admin/media">
+		<folder>css</folder>
+	</media>
+
 	<administration>
 		<menu img="class:kwtsms">COM_KWTSMS</menu>
 		<files folder="admin">
 			<folder>forms</folder>
 			<folder>language</folder>
-			<folder>media</folder>
 			<folder>services</folder>
 			<folder>sql</folder>
 			<folder>src</folder>
