@@ -8,6 +8,16 @@
 
 A free Joomla extension that integrates the [kwtSMS](https://www.kwtsms.com) SMS gateway into your Joomla website. Send SMS notifications for orders, user registrations, OTP authentication, and more.
 
+> Don't have a kwtSMS account? [Sign up at kwtsms.com](https://www.kwtsms.com/signup)
+
+---
+
+## About kwtSMS
+
+kwtSMS is a Kuwaiti SMS gateway trusted by top businesses to deliver messages anywhere in the world, with private Sender ID, free API testing, non-expiring credits, and competitive flat-rate pricing. Secure, simple to integrate, built to last. Open a free account in under 1 minute, no paperwork or payment required. [Get started](https://www.kwtsms.com/signup/)
+
+---
+
 ## Features
 
 - A2P SMS notifications via kwtSMS REST/JSON API
@@ -51,9 +61,15 @@ Get your API credentials from your kwtSMS account at [www.kwtsms.com](https://ww
 3. Enable API access and note your API username and password
 4. Do not use your mobile number as the username
 
-## Support
+## Help & Support
 
-- Documentation: [www.kwtsms.com/support.html](https://www.kwtsms.com/support.html)
+- [kwtSMS FAQ](https://www.kwtsms.com/faq/): Answers to common questions about credits, sender IDs, OTP, and delivery.
+- [kwtSMS Support](https://www.kwtsms.com/support.html): Open a support ticket or browse help articles.
+- [API Documentation (PDF)](https://www.kwtsms.com/doc/KwtSMS.com_API_Documentation_v41.pdf): kwtSMS REST API v4.1 full reference.
+- [Sender ID Help](https://www.kwtsms.com/sender-id-help.html): Sender ID registration and guidelines.
+- [kwtSMS Dashboard](https://www.kwtsms.com/login/): Recharge credits, buy Sender IDs, view message logs, and manage coverage.
+- [Other Integrations](https://www.kwtsms.com/integrations.html): Plugins and integrations for other platforms and languages.
+- [Plugin Issues](https://github.com/boxlinknet/kwtsms-joomla/issues): Report bugs or request features.
 
 ## License
 
