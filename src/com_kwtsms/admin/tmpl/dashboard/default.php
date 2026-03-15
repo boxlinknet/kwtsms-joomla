@@ -26,8 +26,23 @@ $gatewayOk = $this->status['gateway_enabled'] === '1' && $this->status['gateway_
 	</div>
 	<?php endif; ?>
 
-	<!-- Status Cards -->
+	<!-- Status Cards Row 1: Gateway Enabled, Gateway Connected, Test Mode -->
 	<div class="row g-3 mb-4">
+
+		<div class="col-md-4 col-sm-6">
+			<div class="card kwtsms-status-card h-100">
+				<div class="card-body">
+					<h6 class="card-subtitle text-muted mb-2"><?php echo Text::_('COM_KWTSMS_PLUGIN_ENABLED'); ?></h6>
+					<div class="kwtsms-status-value">
+						<?php if ($this->status['gateway_enabled'] === '1') : ?>
+							<span class="badge bg-success"><?php echo Text::_('JENABLED'); ?></span>
+						<?php else : ?>
+							<span class="badge bg-danger"><?php echo Text::_('JDISABLED'); ?></span>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div class="col-md-4 col-sm-6">
 			<div class="card kwtsms-status-card h-100">
@@ -47,6 +62,22 @@ $gatewayOk = $this->status['gateway_enabled'] === '1' && $this->status['gateway_
 		<div class="col-md-4 col-sm-6">
 			<div class="card kwtsms-status-card h-100">
 				<div class="card-body">
+					<h6 class="card-subtitle text-muted mb-2"><?php echo Text::_('COM_KWTSMS_MODE'); ?></h6>
+					<div class="kwtsms-status-value">
+						<?php if ($this->status['test_mode'] === '1') : ?>
+							<span class="badge bg-warning text-dark">Test</span>
+						<?php else : ?>
+							<span class="badge bg-success">Live</span>
+						<?php endif; ?>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Row 2: Balance, Sender ID, Last Sync -->
+		<div class="col-md-4 col-sm-6">
+			<div class="card kwtsms-status-card h-100">
+				<div class="card-body">
 					<h6 class="card-subtitle text-muted mb-2"><?php echo Text::_('COM_KWTSMS_BALANCE'); ?></h6>
 					<div class="kwtsms-status-value"><?php echo htmlspecialchars($this->status['balance'], ENT_QUOTES, 'UTF-8'); ?></div>
 				</div>
@@ -58,36 +89,6 @@ $gatewayOk = $this->status['gateway_enabled'] === '1' && $this->status['gateway_
 				<div class="card-body">
 					<h6 class="card-subtitle text-muted mb-2"><?php echo Text::_('COM_KWTSMS_SENDER_ID'); ?></h6>
 					<div class="kwtsms-status-value"><?php echo htmlspecialchars($this->status['sender_id'] ?: 'KWT-SMS', ENT_QUOTES, 'UTF-8'); ?></div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-4 col-sm-6">
-			<div class="card kwtsms-status-card h-100">
-				<div class="card-body">
-					<h6 class="card-subtitle text-muted mb-2"><?php echo Text::_('COM_KWTSMS_TEST_MODE'); ?></h6>
-					<div class="kwtsms-status-value">
-						<?php if ($this->status['test_mode'] === '1') : ?>
-							<span class="badge bg-warning text-dark"><?php echo Text::_('JENABLED'); ?></span>
-						<?php else : ?>
-							<span class="badge bg-secondary"><?php echo Text::_('JDISABLED'); ?></span>
-						<?php endif; ?>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<div class="col-md-4 col-sm-6">
-			<div class="card kwtsms-status-card h-100">
-				<div class="card-body">
-					<h6 class="card-subtitle text-muted mb-2"><?php echo Text::_('COM_KWTSMS_GATEWAY_ENABLED'); ?></h6>
-					<div class="kwtsms-status-value">
-						<?php if ($this->status['gateway_enabled'] === '1') : ?>
-							<span class="badge bg-success"><?php echo Text::_('JENABLED'); ?></span>
-						<?php else : ?>
-							<span class="badge bg-danger"><?php echo Text::_('JDISABLED'); ?></span>
-						<?php endif; ?>
-					</div>
 				</div>
 			</div>
 		</div>
