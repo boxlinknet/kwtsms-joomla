@@ -5,13 +5,13 @@
         <description>kwtSMS SMS gateway integration for Joomla</description>
         <element>pkg_kwtsms</element>
         <type>package</type>
-        <version>1.2.0</version>
+        <version>1.3.0</version>
         <infourl title="kwtSMS for Joomla">https://github.com/boxlinknet/kwtsms-joomla</infourl>
         <downloads>
-            <downloadurl type="full" format="zip">https://github.com/boxlinknet/kwtsms-joomla/releases/download/v1.2.0/pkg_kwtsms-1.2.0.zip</downloadurl>
+  <downloadurl type="full" format="zip">https://github.com/boxlinknet/kwtsms-joomla/releases/download/v1.3.0/pkg_kwtsms-1.3.0.zip</downloadurl>
         </downloads>
         <tags>
-            <tag>stable</tag>
+  <tag>stable</tag>
         </tags>
         <maintainer>kwtSMS</maintainer>
         <maintainerurl>https://www.kwtsms.com</maintainerurl>
