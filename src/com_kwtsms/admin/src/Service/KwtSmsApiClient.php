@@ -395,16 +395,20 @@ final class KwtSmsApiClient
     /**
      * Send SMS to one or more recipients.
      *
-     * Single entry point for all SMS sending. Handles normalization, deduplication,
-     * coverage filtering, message cleaning, and bulk batching (200 per API call).
-     * Balance is checked once before sending. After each successful API call,
-     * the local cached balance is updated using the balance-after value from the API response.
+     * Single entry point for all SMS sending. Handles: gateway guard, credential check,
+     * balance check (with 24h auto-refresh), normalization, deduplication, phone validation,
+     * coverage filtering, message cleaning, bulk batching (200 per call, 0.5s delay),
+     * balance update from API response, and logging.
      *
-     * @param string[]             $recipients Phone numbers (any format: normalized internally)
-     * @param string               $message    Message text (cleaned internally)
-     * @param string               $sender     Sender ID
-     * @param bool                 $testMode   If true, message enters queue but is not delivered
-     * @param SettingsService|null $settings   Optional settings for gateway guard, coverage filter, balance update
+     * Test mode is read from settings (not passed as parameter). All callers respect the
+     * global test_mode toggle.
+     *
+     * @param string[]             $recipients    Phone numbers (any format: normalized internally)
+     * @param string               $message       Message text (cleaned internally)
+     * @param string               $sender        Sender ID
+     * @param SettingsService|null $settings      Settings for gateway guard, coverage, balance, test mode
+     * @param LogService|null      $log           Optional logger for audit trail
+     * @param string               $recipientType Context label for logging (e.g. 'customer', 'admin', 'test')
      *
      * @return array Result with 'result' key: 'OK', 'BULK', 'SKIPPED', or 'ERROR'
      */
@@ -412,29 +416,83 @@ final class KwtSmsApiClient
         array $recipients,
         string $message,
         string $sender,
-        bool $testMode = false,
-        ?SettingsService $settings = null
+        ?SettingsService $settings = null,
+        ?LogService $log = null,
+        string $recipientType = 'sms'
     ): array {
         // 1. Gateway guard
         if ($settings !== null && !$settings->isGatewayReady()) {
+            $this->logSend($log, 'warning', $recipientType, 'Gateway is disabled or not configured', $recipients);
+
             return ['result' => 'SKIPPED', 'reason' => 'Gateway is disabled or not configured. Enable it in Settings.'];
         }
 
-        // 2. Balance guard (checked once before sending)
+        // 2. Credential check
+        if ($this->username === '' || $this->password === '') {
+            $this->logSend($log, 'error', $recipientType, 'No API credentials configured', $recipients);
+
+            return ['result' => 'ERROR', 'reason' => 'No API credentials configured. Enter them in Settings.'];
+        }
+
+        // 3. Refresh balance if last sync is older than 24 hours
+        if ($settings !== null) {
+            $lastSync = $settings->get('last_sync', '');
+
+            if ($lastSync === '' || (time() - strtotime($lastSync)) > 86400) {
+                $freshBalance = $this->balance();
+
+                if (($freshBalance['result'] ?? '') === 'OK') {
+                    $settings->updateBalance((float) ($freshBalance['available'] ?? 0));
+                    $settings->set('last_sync', gmdate('Y-m-d H:i:s'));
+                }
+            }
+        }
+
+        // 4. Balance guard
         if ($settings !== null && (float) $settings->get('balance', '0') <= 0) {
+            $this->logSend($log, 'warning', $recipientType, 'Insufficient balance (0 credits)', $recipients);
+
             return ['result' => 'SKIPPED', 'reason' => 'Insufficient balance (0 credits). Recharge at kwtsms.com.'];
         }
 
-        // 3. Normalize and deduplicate
-        $normalized = array_map([$this, 'normalize'], $recipients);
-        $normalized = array_filter($normalized, static fn(string $n): bool => $n !== '');
+        // 5. Read test mode from settings (defaults to true when no settings, safe default)
+        //    KWTSMS_TEST_MODE env var forces test mode (used by PHPUnit bootstrap)
+        $testMode = ($_ENV['KWTSMS_TEST_MODE'] ?? '') === '1'
+            || $settings === null
+            || $settings->get('test_mode', '1') === '1';
+
+        // 6. Normalize, deduplicate, validate
+        $normalized = [];
+        $invalid    = [];
+
+        foreach ($recipients as $raw) {
+            $n = $this->normalize($raw);
+
+            if ($n === '') {
+                continue;
+            }
+
+            $check = $this->validateFormat($n);
+
+            if ($check['valid']) {
+                $normalized[] = $n;
+            } else {
+                $invalid[] = ['number' => $n, 'error' => $check['error']];
+            }
+        }
+
         $normalized = array_values(array_unique($normalized));
 
         if (empty($normalized)) {
-            return ['result' => 'SKIPPED', 'reason' => 'No valid phone numbers after normalization. Check the input format.'];
+            $reason = empty($invalid)
+                ? 'No valid phone numbers after normalization. Check the input format.'
+                : 'All numbers failed validation: ' . $invalid[0]['error'];
+            $this->logSend($log, 'warning', $recipientType, $reason, $recipients);
+
+            return ['result' => 'SKIPPED', 'reason' => $reason, 'invalid' => $invalid];
         }
 
-        // 4. Coverage filter
+        // 7. Coverage filter
         if ($settings !== null) {
             $coverage    = $settings->getCoverage();
             $beforeCount = count($normalized);
@@ -444,27 +502,69 @@ final class KwtSmsApiClient
             ));
 
             if (empty($normalized)) {
-                return [
-                    'result' => 'SKIPPED',
-                    'reason' => "All {$beforeCount} recipients are outside your account coverage. Enable more countries at kwtsms.com.",
-                ];
+                $reason = "All {$beforeCount} recipients are outside your account coverage. Enable more countries at kwtsms.com.";
+                $this->logSend($log, 'warning', $recipientType, $reason, $recipients);
+
+                return ['result' => 'SKIPPED', 'reason' => $reason];
             }
         }
 
-        // 5. Clean message
+        // 8. Clean message
         $cleanMsg = $this->cleanMessage($message);
 
         if ($cleanMsg === '') {
+            $this->logSend($log, 'error', $recipientType, 'Message is empty after cleaning', $recipients);
+
             return ['result' => 'ERROR', 'reason' => 'Message is empty after cleaning (HTML tags, emoji, and hidden characters were removed).'];
         }
 
-        // 6. Single send (up to 200)
-        if (count($normalized) <= 200) {
-            return $this->dispatch($normalized, $cleanMsg, $sender, $testMode, $settings);
+        // 8b. Max length guard (7 pages: 1078 chars English/GSM-7, 472 chars Arabic/Unicode)
+        $isUnicode = preg_match('/[^\x20-\x7E\n\r]/', $cleanMsg);
+        $maxChars  = $isUnicode ? 472 : 1078;
+
+        if (mb_strlen($cleanMsg, 'UTF-8') > $maxChars) {
+            $this->logSend($log, 'error', $recipientType, 'Message too long (' . mb_strlen($cleanMsg, 'UTF-8') . ' chars, max ' . $maxChars . ')', $recipients);
+
+            return ['result' => 'ERROR', 'reason' => 'Message too long. Maximum 7 SMS pages (' . $maxChars . ' characters for ' . ($isUnicode ? 'Arabic/Unicode' : 'English') . ').'];
         }
 
-        // 7. Bulk send (200+ recipients)
-        return $this->bulkDispatch($normalized, $cleanMsg, $sender, $testMode, $settings);
+        // 9. Send (single or bulk)
+        $response = count($normalized) <= 200
+            ? $this->dispatch($normalized, $cleanMsg, $sender, $testMode, $settings)
+            : $this->bulkDispatch($normalized, $cleanMsg, $sender, $testMode, $settings);
+
+        // 10. Log result
+        $result = $response['result'] ?? 'ERROR';
+
+        if ($result === 'OK' || $result === 'BULK') {
+            $this->logSend($log, 'info', $recipientType, 'SMS sent', $recipients, [
+                'count'     => count($normalized),
+                'test_mode' => $testMode,
+                'msg_id'    => $response['msg-id'] ?? '',
+                'invalid'   => count($invalid),
+            ]);
+        } else {
+            $this->logSend($log, 'error', $recipientType, 'SMS send failed: ' . ($response['description'] ?? $response['reason'] ?? 'Unknown'), $recipients);
+        }
+
+        if (!empty($invalid)) {
+            $response['invalid'] = $invalid;
+        }
+
+        return $response;
+    }
+
+    /**
+     * Log a send operation if a logger is available.
+     */
+    private function logSend(?LogService $log, string $level, string $context, string $message, array $recipients, array $extra = []): void
+    {
+        if ($log === null) {
+            return;
+        }
+
+        $data = array_merge(['recipient' => implode(',', array_slice($recipients, 0, 3))], $extra);
+        $log->$level($context, $message, $data);
     }
 
     /**
@@ -484,7 +584,7 @@ final class KwtSmsApiClient
 
         foreach ($batches as $index => $batch) {
             if ($index > 0) {
-                usleep(500000); // 0.5s delay between batches
+                usleep(500000);
             }
 
             $response  = $this->dispatch($batch, $message, $sender, $testMode, $settings);

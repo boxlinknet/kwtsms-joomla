@@ -108,10 +108,9 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
                 return true;
             }
 
-            $sender   = $settings->get('sender_id', 'KWT-SMS');
-            $testMode = $settings->get('test_mode', '1') === '1';
+            $sender = $settings->get('sender_id', 'KWT-SMS');
 
-            $client->send([$phone], $message, $sender, $testMode, $settings);
+            $client->send([$phone], $message, $sender, $settings, null, 'customer');
         } catch (\Throwable $e) {
             // Log but never crash VirtueMart order placement
         }
@@ -154,7 +153,6 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
             }
 
             $sender   = $settings->get('sender_id', 'KWT-SMS');
-            $testMode = $settings->get('test_mode', '1') === '1';
             $shopName = Factory::getApplication()->get('sitename', 'Our Shop');
 
             foreach ($orders as $order) {
@@ -193,7 +191,7 @@ final class Kwtsms extends CMSPlugin implements SubscriberInterface
                     continue;
                 }
 
-                $client->send([$phone], $message, $sender, $testMode, $settings);
+                $client->send([$phone], $message, $sender, $settings, null, 'customer');
             }
         } catch (\Throwable $e) {
             // Log but never crash VirtueMart order management

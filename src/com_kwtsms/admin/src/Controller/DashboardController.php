@@ -118,17 +118,11 @@ final class DashboardController extends BaseController
 
 			$client   = new KwtSmsApiClient($creds['username'], $creds['password']);
 			$sender   = $settings->get('sender_id', 'KWT-SMS');
-			$testMode = $settings->get('test_mode', '1') === '1';
-			$response = $client->send([$phone], $message, $sender, $testMode, $settings);
+			$response = $client->send([$phone], $message, $sender, $settings, $log, 'test');
 			$result   = $response['result'] ?? 'ERROR';
+			$testMode = $settings->get('test_mode', '1') === '1';
 
 			if ($result === 'OK') {
-				$log->info('send', 'Test SMS sent', [
-					'recipient' => $phone,
-					'msg_id'    => $response['msg-id'] ?? '',
-					'test_mode' => $testMode,
-				]);
-
 				$balanceAfter = $response['balance-after'] ?? '';
 				$msgText      = $testMode
 					? Text::sprintf('COM_KWTSMS_MSG_TEST_SENT_TEST', $balanceAfter)
@@ -136,15 +130,9 @@ final class DashboardController extends BaseController
 
 				$this->setMessage($msgText);
 			} elseif ($result === 'SKIPPED') {
-				$reason = $response['reason'] ?? 'Unknown';
-
-				$log->warning('send', 'Test SMS skipped: ' . $reason, ['recipient' => $phone]);
-				$this->setMessage(Text::sprintf('COM_KWTSMS_MSG_TEST_SKIPPED', $reason), 'warning');
+				$this->setMessage(Text::sprintf('COM_KWTSMS_MSG_TEST_SKIPPED', $response['reason'] ?? 'Unknown'), 'warning');
 			} else {
-				$desc = $response['description'] ?? $response['reason'] ?? 'Unknown error';
-
-				$log->error('send', 'Test SMS failed: ' . $desc, ['recipient' => $phone]);
-				$this->setMessage(Text::sprintf('COM_KWTSMS_MSG_TEST_FAILED', $desc), 'error');
+				$this->setMessage(Text::sprintf('COM_KWTSMS_MSG_TEST_FAILED', $response['description'] ?? $response['reason'] ?? 'Unknown error'), 'error');
 			}
 		} catch (\Throwable $e) {
 			$this->setMessage(Text::sprintf('COM_KWTSMS_MSG_TEST_FAILED', $e->getMessage()), 'error');
