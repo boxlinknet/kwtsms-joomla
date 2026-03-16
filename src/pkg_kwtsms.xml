@@ -11,7 +11,7 @@
     <authorEmail>support@kwtsms.com</authorEmail>
     <authorUrl>https://www.kwtsms.com</authorUrl>
     <creationDate>2025-03-14</creationDate>
-    <version>1.2.0</version>
+    <version>1.3.0</version>
     <description>PKG_KWTSMS_DESCRIPTION</description>
     <license>GPL v2 or later</license>
     <blockChildUninstall>true</blockChildUninstall>
